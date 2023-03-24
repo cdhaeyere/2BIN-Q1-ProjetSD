@@ -141,8 +141,8 @@ public class Graph {
       provisionalLabels.remove(current);
       finalLabels.put(current, min);
 
-      Set<Troncon> tronconHashSet = listDAdjacences.get(current);
-      for (Troncon troncon : tronconHashSet) {
+      Set<Troncon> troncons = listDAdjacences.get(current);
+      for (Troncon troncon : troncons) {
         int distance = min + troncon.getDuration();
         if ((provisionalLabels.get(troncon.getDestination()) == null || distance < provisionalLabels.get(troncon.getDestination()))
             && !finalLabels.containsKey(troncon.getDestination())) {
@@ -157,7 +157,7 @@ public class Graph {
 
   public void printPath(Station arrive, Station depart, Map<Station, Troncon> chemins) {
     Station current = arrive;
-    Deque<Deplacement> arrayDeque1 = new ArrayDeque<>();
+    Deque<Deplacement> deplacements = new ArrayDeque<>();
 
     int currentLine = -1;
     Deplacement currentDeplacement = null;
@@ -169,20 +169,19 @@ public class Graph {
         currentDeplacement.setDuration(troncon.getDuration());
         currentDeplacement.addTroncon();
       } else {
-        Deplacement deplacement = new Deplacement(troncon.getLineId(), lignes.get(troncon.getLineId()).getLineNumber(),
+        currentDeplacement = new Deplacement(troncon.getLineId(), lignes.get(troncon.getLineId()).getLineNumber(),
             troncon.getOrigin(), troncon.getDestination(), lignes.get(troncon.getLineId()).getWaitingTime(),
             troncon.getDuration(), 1, lignes.get(troncon.getLineId()).getTransportType(),
             lignes.get(troncon.getLineId()).getDestination());
-        currentDeplacement = deplacement;
         currentLine = troncon.getLineId();
-        arrayDeque1.addFirst(currentDeplacement);
+        deplacements.addFirst(currentDeplacement);
       }
       current = chemins.get(current).getOrigin();
     }
     int dureeTransport = 0;
     int dureeTotale = 0;
     currentLine = -1;
-    for (Deplacement deplacement : arrayDeque1) {
+    for (Deplacement deplacement : deplacements) {
       dureeTransport += deplacement.getDuration();
       if(currentLine != deplacement.getLineId()){
         currentLine = deplacement.getLineId();
@@ -195,27 +194,3 @@ public class Graph {
     System.out.println("Durée totale du trajet: " + dureeTotale);
   }
 }
-
-/*
-Station current = arrive;
-    Deque<Troncon> arrayDeque1 = new ArrayDeque<>();
-    while (!current.equals(depart)) {
-      Troncon troncon = chemins.get(current);
-      arrayDeque1.addFirst(troncon);
-      current = chemins.get(current).getOrigin();
-    }
-    int dureeTransport = 0;
-    int dureeTotale = 0;
-    int currentLine = -1;
-    for (Troncon troncon : arrayDeque1) {
-      dureeTransport += troncon.getDuration();
-      if(currentLine != troncon.getLineId()){
-        currentLine = troncon.getLineId();
-        dureeTotale += lignes.get(troncon.getLineId()).getWaitingTime();
-      }
-      System.out.println(troncon);
-    }
-    dureeTotale += dureeTransport;
-    System.out.println("durée dans les trasports:" + dureeTransport);
-    System.out.println("Durée totale du trajet: " + dureeTotale);
- */
