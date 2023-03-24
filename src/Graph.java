@@ -157,14 +157,65 @@ public class Graph {
 
   public void printPath(Station arrive, Station depart, Map<Station, Troncon> chemins) {
     Station current = arrive;
+    Deque<Deplacement> arrayDeque1 = new ArrayDeque<>();
+
+    int currentLine = -1;
+    Deplacement currentDeplacement = null;
+    while (!current.equals(depart)) {
+      Troncon troncon = chemins.get(current);
+
+      if (currentLine == troncon.getLineId()){
+        currentDeplacement.setDestination(troncon.getDestination());
+        currentDeplacement.setDuration(troncon.getDuration());
+        currentDeplacement.addTroncon();
+      } else {
+        Deplacement deplacement = new Deplacement(troncon.getLineId(), lignes.get(troncon.getLineId()).getLineNumber(),
+            troncon.getOrigin(), troncon.getDestination(), lignes.get(troncon.getLineId()).getWaitingTime(),
+            troncon.getDuration(), 1, lignes.get(troncon.getLineId()).getTransportType(),
+            lignes.get(troncon.getLineId()).getDestination());
+        currentDeplacement = deplacement;
+        currentLine = troncon.getLineId();
+        arrayDeque1.addFirst(currentDeplacement);
+      }
+      current = chemins.get(current).getOrigin();
+    }
+    int dureeTransport = 0;
+    int dureeTotale = 0;
+    currentLine = -1;
+    for (Deplacement deplacement : arrayDeque1) {
+      dureeTransport += deplacement.getDuration();
+      if(currentLine != deplacement.getLineId()){
+        currentLine = deplacement.getLineId();
+        dureeTotale += lignes.get(deplacement.getLineId()).getWaitingTime();
+      }
+      System.out.println(deplacement);
+    }
+    dureeTotale += dureeTransport;
+    System.out.println("durée dans les trasports:" + dureeTransport);
+    System.out.println("Durée totale du trajet: " + dureeTotale);
+  }
+}
+
+/*
+Station current = arrive;
     Deque<Troncon> arrayDeque1 = new ArrayDeque<>();
     while (!current.equals(depart)) {
       Troncon troncon = chemins.get(current);
       arrayDeque1.addFirst(troncon);
       current = chemins.get(current).getOrigin();
     }
+    int dureeTransport = 0;
+    int dureeTotale = 0;
+    int currentLine = -1;
     for (Troncon troncon : arrayDeque1) {
+      dureeTransport += troncon.getDuration();
+      if(currentLine != troncon.getLineId()){
+        currentLine = troncon.getLineId();
+        dureeTotale += lignes.get(troncon.getLineId()).getWaitingTime();
+      }
       System.out.println(troncon);
     }
-  }
-}
+    dureeTotale += dureeTransport;
+    System.out.println("durée dans les trasports:" + dureeTransport);
+    System.out.println("Durée totale du trajet: " + dureeTotale);
+ */
